@@ -1,9 +1,9 @@
 export interface PasswordCredentials {
-    email: string;
-    newPassword: string;
+  email: string;
+  newPassword: string;
 }
 
-import { Component, inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { UserService } from '../../../core/services/user.service';
@@ -14,10 +14,9 @@ import { UserA } from '../../../core/models/user-admin.model';
   standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './change-password.html',
-  styleUrl: './change-password.scss'
+  styleUrl: './change-password.scss',
 })
-export class ChangePasswordComponent {
-
+export class ChangePasswordComponent implements OnInit {
   private userService = inject(UserService);
 
   searchText = '';
@@ -28,7 +27,7 @@ export class ChangePasswordComponent {
   message: string | null = null;
 
   ngOnInit() {
-    this.userService.getAllAdminUsers().subscribe(users => {
+    this.userService.getAllAdminUsers().subscribe((users) => {
       this.users = users;
       this.filteredUsers = users;
     });
@@ -37,12 +36,12 @@ export class ChangePasswordComponent {
   filterUsers() {
     const text = this.searchText.toLowerCase();
 
-    this.filteredUsers = this.users.filter(u =>
-      `${u.firstName} ${u.lastName}`.toLowerCase().includes(text)
+    this.filteredUsers = this.users.filter((u) =>
+      `${u.firstName} ${u.lastName}`.toLowerCase().includes(text),
     );
   }
 
- selectUser(user: UserA) {
+  selectUser(user: UserA) {
     this.selectedUser = user;
     this.searchText = `${user.firstName} ${user.lastName}`;
     this.filteredUsers = [];
@@ -51,17 +50,14 @@ export class ChangePasswordComponent {
   onSubmit() {
     if (!this.selectedUser || !this.newPassword) return;
 
-    this.userService.changePassword(
-      this.selectedUser.id,
-      this.newPassword
-    ).subscribe({
+    this.userService.changePassword(this.selectedUser.id, this.newPassword).subscribe({
       next: () => {
         this.message = 'Contraseña actualizada exitosamente';
         this.newPassword = '';
       },
       error: () => {
         this.message = 'Error al actualizar la contraseña';
-      }
+      },
     });
   }
 

@@ -1,7 +1,14 @@
 node_modules
 dist
+out-tsc
+coverage
 .angular
 .git
-.gitignore
-*.md
-karma.conf.js
+.vscode
+.idea
+.env
+.env.*
+!.env.example
+*.log
+*.tmp
+*.tsbuildinfo

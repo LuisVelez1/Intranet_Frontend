@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/models/user.model';
@@ -41,7 +41,7 @@ export class DirectoryDialogComponent implements OnInit {
   constructor(
     private userService: UserService,
     private dialogRef: MatDialogRef<DirectoryDialogComponent>,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {}
 
   ngOnInit() {
@@ -66,7 +66,7 @@ export class DirectoryDialogComponent implements OnInit {
     this.filteredEmployees = this.employees.filter(
       (e) =>
         e.fullName.toLowerCase().includes(text) ||
-        (e.position?.toLowerCase().includes(text) ?? false)
+        (e.position?.toLowerCase().includes(text) ?? false),
     );
   }
 

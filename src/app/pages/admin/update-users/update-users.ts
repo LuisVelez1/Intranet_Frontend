@@ -7,24 +7,23 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { UserA } from '../../../core/models/user-admin.model';
-import { SEDES } from '../../../core/constants/sedes.contants';
+import { SITES } from '../../../core/constants/sites.constants';
 
 @Component({
   selector: 'app-update-users',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    MatFormFieldModule, 
-    MatSelectModule, 
-    MatDatepickerModule, 
-    MatInputModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatInputModule,
   ],
   templateUrl: './update-users.html',
-  styleUrls: ['./update-users.scss']
+  styleUrls: ['./update-users.scss'],
 })
 export class UpdateUsersComponent implements OnInit {
-
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
 
@@ -33,7 +32,7 @@ export class UpdateUsersComponent implements OnInit {
   success: string | null = null;
   showDropdown = false;
   areasLoaded = false;
-  sedes = SEDES;
+  sedes = SITES;
 
   users: UserA[] = [];
   filteredUsers: UserA[] = [];
@@ -53,25 +52,23 @@ export class UpdateUsersComponent implements OnInit {
   });
 
   ngOnInit(): void {
-  this.loadAreas();
-  this.loadUsers();
-}
+    this.loadAreas();
+    this.loadUsers();
+  }
 
   loadUsers() {
     this.userService.getAllAdminUsers().subscribe({
       next: (users) => {
         this.users = users;
         this.filteredUsers = users;
-      }
+      },
     });
   }
 
   search(term: string) {
     const value = term.toLowerCase().trim();
 
-    this.filteredUsers = this.users.filter(u =>
-      (u.fullName || '').toLowerCase().includes(value)
-    );
+    this.filteredUsers = this.users.filter((u) => (u.fullName || '').toLowerCase().includes(value));
 
     this.showDropdown = true;
   }
@@ -81,10 +78,7 @@ export class UpdateUsersComponent implements OnInit {
 
     this.userService.getUserById(user.id).subscribe({
       next: (u) => {
-
-        const birth = u.birthDate
-          ? new Date(u.birthDate).toISOString().split('T')[0]
-          : '';
+        const birth = u.birthDate ? new Date(u.birthDate).toISOString().split('T')[0] : '';
 
         this.form.patchValue({
           firstName: u.firstName,
@@ -94,9 +88,9 @@ export class UpdateUsersComponent implements OnInit {
           position: u.position,
           sede: u.sede,
           areaId: u.areaId ?? null,
-          birthDate: birth
+          birthDate: birth,
         });
-      }
+      },
     });
 
     this.showDropdown = false;
@@ -108,7 +102,7 @@ export class UpdateUsersComponent implements OnInit {
         this.areas = data;
         this.areasLoaded = true;
       },
-      error: (err) => console.error(err)
+      error: (err) => console.error(err),
     });
   }
 
@@ -124,7 +118,6 @@ export class UpdateUsersComponent implements OnInit {
     this.error = null;
     this.success = null;
 
-  
     const raw = this.form.getRawValue();
 
     const payload: any = {
@@ -135,20 +128,16 @@ export class UpdateUsersComponent implements OnInit {
       position: raw.position,
       sede: raw.sede,
       areaId: raw.areaId !== null && raw.areaId !== undefined ? Number(raw.areaId) : undefined,
-      birthDate: raw.birthDate
-        ? new Date(raw.birthDate).toISOString().split('T')[0]
-        : null
+      birthDate: raw.birthDate ? new Date(raw.birthDate).toISOString().split('T')[0] : null,
     };
 
     if (!this.selectedUserId) {
       this.error = 'Debes seleccionar un usuario primero';
       this.loading = false;
-      return; 
-    } 
-    
-    this.userService
-    .updateAdminUser(this.selectedUserId!, payload)
-    .subscribe({
+      return;
+    }
+
+    this.userService.updateAdminUser(this.selectedUserId!, payload).subscribe({
       next: () => {
         this.loading = false;
         this.success = 'Usuario actualizado correctamente';
@@ -157,7 +146,7 @@ export class UpdateUsersComponent implements OnInit {
         console.error(err);
         this.loading = false;
         this.error = err?.error?.message || 'Error al actualizar el usuario';
-      }
+      },
     });
   }
 
