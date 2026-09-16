@@ -1,6 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -12,17 +11,12 @@ import { UserA } from '../../../core/models/user-admin.model';
   selector: 'app-users',
   templateUrl: './users.html',
   styleUrls: ['./users.scss'],
-  imports: [
-    CommonModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule
-  ]
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatTooltipModule],
 })
 export class UsersComponent implements OnInit {
   private userService = inject(UserService);
 
- users: UserA[] = [];
+  users: UserA[] = [];
   loading = true;
 
   ngOnInit(): void {
@@ -38,8 +32,7 @@ export class UsersComponent implements OnInit {
       error: (err) => {
         console.error('Error cargando usuarios', err);
         this.loading = false;
-      }
+      },
     });
   }
 }
-

@@ -9,7 +9,7 @@ import { AssetsReportComponent } from './assets-report.component';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SEDES } from '../../core/constants/sedes.contants';
+import { SITES } from '../../core/constants/sites.constants';
 
 interface AssetForm extends Partial<FixedAssetRequest> {
   ramType?: string;
@@ -31,16 +31,9 @@ interface EmployeeOption {
   standalone: true,
   templateUrl: './fixed-assets.html',
   styleUrls: ['./fixed-assets.scss'],
-  imports: [
-    CommonModule,
-    FormsModule,
-    DatePipe,
-    CountByStatusPipe,
-    AssetsReportComponent
-  ]
+  imports: [CommonModule, FormsModule, DatePipe, CountByStatusPipe, AssetsReportComponent],
 })
 export class FixedAssetsComponent implements OnInit {
-
   // ── Estado general ──────────────────────────────
   assets: FixedAssetResponse[] = [];
   filteredAssets: FixedAssetResponse[] = [];
@@ -83,12 +76,23 @@ export class FixedAssetsComponent implements OnInit {
 
   // ── Catálogos ────────────────────────────────────
   readonly categories = [
-    'Portátil', 'PC de Escritorio', 'PC Mini / All-in-One',
-    'Monitor', 'Impresora', 'Teléfono IP', 'Teléfono celular', 'Servidor',
-    'Switch / Router', 'UPS', 'Proyector', 'Tablet', 'CCTV', 'Otro'
+    'Portátil',
+    'PC de Escritorio',
+    'PC Mini / All-in-One',
+    'Monitor',
+    'Impresora',
+    'Teléfono IP',
+    'Teléfono celular',
+    'Servidor',
+    'Switch / Router',
+    'UPS',
+    'Proyector',
+    'Tablet',
+    'CCTV',
+    'Otro',
   ];
 
-  readonly sedes = SEDES;
+  readonly sedes = SITES;
 
   get totalValue(): number {
     return this.assets.reduce((sum, a) => sum + (a.acquisitionValue ?? 0), 0);
@@ -98,7 +102,7 @@ export class FixedAssetsComponent implements OnInit {
     private fixedAssetsService: FixedAssetsService,
     private userService: UserService,
     private areaService: AreaService,
-    protected cdr: ChangeDetectorRef
+    protected cdr: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -108,33 +112,29 @@ export class FixedAssetsComponent implements OnInit {
     this.loadAreas();
   }
 
-
   loadCurrentUser(): void {
     this.userService.getCurrentUser().subscribe({
       next: (user) => {
         this.currentUserId = user.id;
         this.currentUserFullName = `${user.firstName} ${user.lastName}`;
         this.currentUserPosition = user.position ?? 'Director TIC';
-        this.isAdmin = !!(
-          user.roles?.includes('ADMIN') || 
-          user.roles?.includes('SUPER_ADMIN')
-        );
+        this.isAdmin = !!(user.roles?.includes('ADMIN') || user.roles?.includes('SUPER_ADMIN'));
       },
-      error: (err) => console.error('Error cargando usuario actual:', err)
+      error: (err) => console.error('Error cargando usuario actual:', err),
     });
   }
 
   private loadUsers(): void {
     this.userService.getAllAdminUsers().subscribe({
-      next: (users) => this.allUsers = users,
-      error: (err) => console.error('Error cargando usuarios:', err)
+      next: (users) => (this.allUsers = users),
+      error: (err) => console.error('Error cargando usuarios:', err),
     });
   }
 
   private loadAreas(): void {
     this.areaService.findAll().subscribe({
-      next: (areas) => this.areaList = areas,
-      error: (err) => console.error('Error cargando áreas:', err)
+      next: (areas) => (this.areaList = areas),
+      error: (err) => console.error('Error cargando áreas:', err),
     });
   }
 
@@ -150,7 +150,7 @@ export class FixedAssetsComponent implements OnInit {
         this.error = 'Error al cargar activos fijos';
         this.loading = false;
         console.error(err);
-      }
+      },
     });
   }
 
@@ -167,14 +167,14 @@ export class FixedAssetsComponent implements OnInit {
         this.filterAssets();
         this.toggleForm();
       },
-      error: (err) => console.error('Error al guardar activo:', err)
+      error: (err) => console.error('Error al guardar activo:', err),
     });
   }
 
   private buildPayload(): FixedAssetRequest {
-    const ram     = [this.newAsset.ram,     this.newAsset.ramType    ].filter(Boolean).join(' ');
+    const ram = [this.newAsset.ram, this.newAsset.ramType].filter(Boolean).join(' ');
     const storage = [this.newAsset.storage, this.newAsset.storageType].filter(Boolean).join(' ');
-    const toDateTime = (d?: string | null) => d ? `${d}T00:00:00` : null;
+    const toDateTime = (d?: string | null) => (d ? `${d}T00:00:00` : null);
     const parseValue = (s?: string): number | null => {
       if (!s) return null;
       const n = parseFloat(s.replace(/\./g, '').replace(',', '.'));
@@ -182,29 +182,29 @@ export class FixedAssetsComponent implements OnInit {
     };
 
     return {
-      code:             '',
-      name:             this.newAsset.name ?? '',
-      category:         this.newAsset.category ?? '',
-      brand:            this.newAsset.brand ?? '',
-      model:            this.newAsset.model ?? '',
-      serial:           this.newAsset.serial ?? '',
-      location:         this.newAsset.location ?? '',
-      sede:             this.newAsset.sede ?? '',
-      areaId:           this.newAsset.areaId ?? null,
-      assignedToId:     this.selectedEmployeeId,
-      status:           this.newAsset.status ?? 'activo',
-      acquisitionDate:  toDateTime(this.newAsset.acquisitionDate),
+      code: '',
+      name: this.newAsset.name ?? '',
+      category: this.newAsset.category ?? '',
+      brand: this.newAsset.brand ?? '',
+      model: this.newAsset.model ?? '',
+      serial: this.newAsset.serial ?? '',
+      location: this.newAsset.location ?? '',
+      sede: this.newAsset.sede ?? '',
+      areaId: this.newAsset.areaId ?? null,
+      assignedToId: this.selectedEmployeeId,
+      status: this.newAsset.status ?? 'activo',
+      acquisitionDate: toDateTime(this.newAsset.acquisitionDate),
       acquisitionValue: parseValue(this.newAsset.acquisitionValueStr),
-      description:      this.newAsset.description ?? '',
-      processor:        this.newAsset.processor ?? '',
+      description: this.newAsset.description ?? '',
+      processor: this.newAsset.processor ?? '',
       ram,
       storage,
-      os:               this.newAsset.os ?? '',
-      ip:               this.newAsset.ip ?? '',
-      mac:              this.newAsset.mac ?? '',
-      warrantyDate:     toDateTime(this.newAsset.warrantyDate),
-      actaFirmada:      false,
-      actaDate:         null
+      os: this.newAsset.os ?? '',
+      ip: this.newAsset.ip ?? '',
+      mac: this.newAsset.mac ?? '',
+      warrantyDate: toDateTime(this.newAsset.warrantyDate),
+      actaFirmada: false,
+      actaDate: null,
     };
   }
 
@@ -218,12 +218,29 @@ export class FixedAssetsComponent implements OnInit {
 
   private emptyForm(): AssetForm {
     return {
-      name: '', category: '', brand: '', model: '', serial: '',
-      location: '', sede: '', areaId: null, status: 'activo', description: '',
-      processor: '', ram: '', ramType: '', storage: '', storageType: '',
-      os: '', ip: '', mac: '', acquisitionValueStr: '',
-      acquisitionDate: '', warrantyDate: '',
-      hasLicenseWindows: false, hasLicenseOffice: false
+      name: '',
+      category: '',
+      brand: '',
+      model: '',
+      serial: '',
+      location: '',
+      sede: '',
+      areaId: null,
+      status: 'activo',
+      description: '',
+      processor: '',
+      ram: '',
+      ramType: '',
+      storage: '',
+      storageType: '',
+      os: '',
+      ip: '',
+      mac: '',
+      acquisitionValueStr: '',
+      acquisitionDate: '',
+      warrantyDate: '',
+      hasLicenseWindows: false,
+      hasLicenseOffice: false,
     };
   }
 
@@ -252,31 +269,31 @@ export class FixedAssetsComponent implements OnInit {
     const a = this.previewAsset;
 
     this.editForm = {
-      name:                a.name,
-      category:            a.category,
-      brand:               a.brand,
-      model:               a.model,
-      serial:              a.serial,
-      location:            a.location,
-      sede:                a.sede,
-      areaId:              a.areaId ?? null,
-      status:              a.status,
-      description:         a.description,
-      processor:           a.processor,
-      ram:                 a.ram?.split(' ')[0] ?? '',
-      ramType:             a.ram?.split(' ')[1] ?? '',
-      storage:             a.storage?.split(' ')[0] ?? '',
-      storageType:         a.storage?.split(' ')[1] ?? '',
-      os:                  a.os,
-      ip:                  a.ip,
-      mac:                 a.mac,
+      name: a.name,
+      category: a.category,
+      brand: a.brand,
+      model: a.model,
+      serial: a.serial,
+      location: a.location,
+      sede: a.sede,
+      areaId: a.areaId ?? null,
+      status: a.status,
+      description: a.description,
+      processor: a.processor,
+      ram: a.ram?.split(' ')[0] ?? '',
+      ramType: a.ram?.split(' ')[1] ?? '',
+      storage: a.storage?.split(' ')[0] ?? '',
+      storageType: a.storage?.split(' ')[1] ?? '',
+      os: a.os,
+      ip: a.ip,
+      mac: a.mac,
       acquisitionValueStr: a.acquisitionValue?.toString() ?? '',
-      acquisitionDate:     a.acquisitionDate?.split('T')[0] ?? '',
-      warrantyDate:        a.warrantyDate?.split('T')[0] ?? '',
+      acquisitionDate: a.acquisitionDate?.split('T')[0] ?? '',
+      warrantyDate: a.warrantyDate?.split('T')[0] ?? '',
     };
 
     // Pre-cargar empleado asignado en el buscador
-    this.employeeSearch     = a.assignedToFullName ?? '';
+    this.employeeSearch = a.assignedToFullName ?? '';
     this.selectedEmployeeId = a.assignedToId ?? null;
     this.editMode = true;
   }
@@ -291,9 +308,9 @@ export class FixedAssetsComponent implements OnInit {
   saveEdit(): void {
     if (!this.previewAsset) return;
 
-    const ram     = [this.editForm.ram,     this.editForm.ramType    ].filter(Boolean).join(' ');
+    const ram = [this.editForm.ram, this.editForm.ramType].filter(Boolean).join(' ');
     const storage = [this.editForm.storage, this.editForm.storageType].filter(Boolean).join(' ');
-    const toDateTime = (d?: string | null) => d ? `${d}T00:00:00` : null;
+    const toDateTime = (d?: string | null) => (d ? `${d}T00:00:00` : null);
     const parseValue = (s?: string): number | null => {
       if (!s) return null;
       const n = parseFloat(s.replace(/\./g, '').replace(',', '.'));
@@ -301,40 +318,40 @@ export class FixedAssetsComponent implements OnInit {
     };
 
     const payload: FixedAssetRequest = {
-      code:             this.previewAsset.code ?? '',
-      name:             this.editForm.name ?? '',
-      category:         this.editForm.category ?? '',
-      brand:            this.editForm.brand ?? '',
-      model:            this.editForm.model ?? '',
-      serial:           this.editForm.serial ?? '',
-      location:         this.editForm.location ?? '',
-      sede:             this.editForm.sede ?? '',
-      areaId:           this.editForm.areaId ?? null,
-      assignedToId:     this.selectedEmployeeId,
-      status:           this.editForm.status ?? 'activo',
-      acquisitionDate:  toDateTime(this.editForm.acquisitionDate),
+      code: this.previewAsset.code ?? '',
+      name: this.editForm.name ?? '',
+      category: this.editForm.category ?? '',
+      brand: this.editForm.brand ?? '',
+      model: this.editForm.model ?? '',
+      serial: this.editForm.serial ?? '',
+      location: this.editForm.location ?? '',
+      sede: this.editForm.sede ?? '',
+      areaId: this.editForm.areaId ?? null,
+      assignedToId: this.selectedEmployeeId,
+      status: this.editForm.status ?? 'activo',
+      acquisitionDate: toDateTime(this.editForm.acquisitionDate),
       acquisitionValue: parseValue(this.editForm.acquisitionValueStr),
-      description:      this.editForm.description ?? '',
-      processor:        this.editForm.processor ?? '',
+      description: this.editForm.description ?? '',
+      processor: this.editForm.processor ?? '',
       ram,
       storage,
-      os:               this.editForm.os ?? '',
-      ip:               this.editForm.ip ?? '',
-      mac:              this.editForm.mac ?? '',
-      warrantyDate:     toDateTime(this.editForm.warrantyDate),
-      actaFirmada:      this.previewAsset.actaFirmada ?? false,
-      actaDate:         null
+      os: this.editForm.os ?? '',
+      ip: this.editForm.ip ?? '',
+      mac: this.editForm.mac ?? '',
+      warrantyDate: toDateTime(this.editForm.warrantyDate),
+      actaFirmada: this.previewAsset.actaFirmada ?? false,
+      actaDate: null,
     };
 
     this.fixedAssetsService.update(this.previewAsset.id, payload).subscribe({
       next: (updated) => {
-        const idx = this.assets.findIndex(a => a.id === updated.id);
+        const idx = this.assets.findIndex((a) => a.id === updated.id);
         if (idx !== -1) this.assets[idx] = updated;
         this.filterAssets();
         this.previewAsset = updated;
         this.closeEditMode();
       },
-      error: (err) => console.error('Error actualizando activo:', err)
+      error: (err) => console.error('Error actualizando activo:', err),
     });
   }
 
@@ -354,16 +371,17 @@ export class FixedAssetsComponent implements OnInit {
 
     const q = query.toLowerCase();
     this.employeeResults = this.allUsers
-      .filter(u =>
-        `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
-        u.position?.toLowerCase().includes(q)
+      .filter(
+        (u) =>
+          `${u.firstName} ${u.lastName}`.toLowerCase().includes(q) ||
+          u.position?.toLowerCase().includes(q),
       )
       .slice(0, 8)
-      .map(u => ({
+      .map((u) => ({
         id: u.id,
         name: `${u.firstName} ${u.lastName}`,
         position: u.position ?? '',
-        sede: u.sede ?? ''
+        sede: u.sede ?? '',
       }));
 
     this.showEmployeeDropdown = this.employeeResults.length > 0;
@@ -387,14 +405,16 @@ export class FixedAssetsComponent implements OnInit {
 
   filterAssets(): void {
     const q = this.searchText.toLowerCase();
-    this.filteredAssets = this.assets.filter(a => {
-      const matchSearch = !q || [
-        a.name, a.code, a.serial, a.assignedToFullName, a.brand
-      ].some(val => val?.toLowerCase().includes(q));
+    this.filteredAssets = this.assets.filter((a) => {
+      const matchSearch =
+        !q ||
+        [a.name, a.code, a.serial, a.assignedToFullName, a.brand].some((val) =>
+          val?.toLowerCase().includes(q),
+        );
 
-      const matchSede     = !this.filterSede     || a.sede === this.filterSede;
+      const matchSede = !this.filterSede || a.sede === this.filterSede;
       const matchCategory = !this.filterCategory || a.category === this.filterCategory;
-      const matchStatus   = !this.filterStatus   || a.status === this.filterStatus;
+      const matchStatus = !this.filterStatus || a.status === this.filterStatus;
 
       return matchSearch && matchSede && matchCategory && matchStatus;
     });
@@ -407,24 +427,38 @@ export class FixedAssetsComponent implements OnInit {
   formatCurrency(value: number | null | undefined): string {
     if (value == null) return '—';
     return new Intl.NumberFormat('es-CO', {
-      style: 'currency', currency: 'COP', maximumFractionDigits: 0
+      style: 'currency',
+      currency: 'COP',
+      maximumFractionDigits: 0,
     }).format(value);
   }
 
   getCategoryIcon(category: string): string {
     const icons: Record<string, string> = {
-      'Portátil': '💻', 'PC de Escritorio': '🖥️', 'PC Mini / All-in-One': '🖥️',
-      'Monitor': '🖥️', 'Impresora': '🖨️', 'Teléfono IP': '☎️', 'Teléfono celular': '📱',
-      'Servidor': '🗄️', 'Switch / Router': '🔌', 'UPS': '🔋',
-      'Proyector': '📽️', 'Tablet': '📱', 'CCTV': '📹', 'Otro': '📦'
+      Portátil: '💻',
+      'PC de Escritorio': '🖥️',
+      'PC Mini / All-in-One': '🖥️',
+      Monitor: '🖥️',
+      Impresora: '🖨️',
+      'Teléfono IP': '☎️',
+      'Teléfono celular': '📱',
+      Servidor: '🗄️',
+      'Switch / Router': '🔌',
+      UPS: '🔋',
+      Proyector: '📽️',
+      Tablet: '📱',
+      CCTV: '📹',
+      Otro: '📦',
     };
     return icons[category] ?? '📦';
   }
 
   getStatusLabel(status: string): string {
     const labels: Record<string, string> = {
-      'activo': 'Activo', 'disponible': 'Disponible',
-      'en_mantenimiento': 'Mantenimiento', 'dado_de_baja': 'Dado de baja'
+      activo: 'Activo',
+      disponible: 'Disponible',
+      en_mantenimiento: 'Mantenimiento',
+      dado_de_baja: 'Dado de baja',
     };
     return labels[status] ?? status;
   }
@@ -433,30 +467,27 @@ export class FixedAssetsComponent implements OnInit {
     return sede?.toLowerCase().replace(/\s+/g, '-') ?? '';
   }
 
-  
   generateActa(asset: FixedAssetResponse): void {
-  const logoUrl = 'assets/images/Logo.png';
+    const logoUrl = 'assets/images/Logo.png';
 
-  const formatDate = (dateStr?: string | null): string => {
-    if (!dateStr) return '—';
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' });
-  };
+    const today = new Date().toLocaleDateString('es-CO', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
 
-  const today = new Date().toLocaleDateString('es-CO', {
-    year: 'numeric', month: '2-digit', day: '2-digit'
-  });
+    const specs = [
+      asset.processor ? `Procesador: ${asset.processor}` : null,
+      asset.ram ? `RAM: ${asset.ram}` : null,
+      asset.storage ? `Almacenamiento: ${asset.storage}` : null,
+      asset.os ? `S.O.: ${asset.os}` : null,
+      asset.ip ? `IP: ${asset.ip}` : null,
+      asset.mac ? `MAC: ${asset.mac}` : null,
+    ]
+      .filter(Boolean)
+      .join(' &nbsp;|&nbsp; ');
 
-  const specs = [
-    asset.processor ? `Procesador: ${asset.processor}` : null,
-    asset.ram       ? `RAM: ${asset.ram}`               : null,
-    asset.storage   ? `Almacenamiento: ${asset.storage}` : null,
-    asset.os        ? `S.O.: ${asset.os}`               : null,
-    asset.ip        ? `IP: ${asset.ip}`                 : null,
-    asset.mac       ? `MAC: ${asset.mac}`               : null,
-  ].filter(Boolean).join(' &nbsp;|&nbsp; ');
-
-  const html = `
+    const html = `
     <!DOCTYPE html>
     <html lang="es">
     <head>
@@ -640,11 +671,15 @@ export class FixedAssetsComponent implements OnInit {
           <td class="label">Activo fijo:</td>
           <td>${asset.code || '—'}</td>
         </tr>
-        ${asset.os || asset.processor ? `
+        ${
+          asset.os || asset.processor
+            ? `
         <tr>
           <td class="label">Software instalado:</td>
           <td colspan="3">${asset.os ?? '—'}</td>
-        </tr>` : ''}
+        </tr>`
+            : ''
+        }
       </table>
 
       ${specs ? `<div class="specs-row">⚙️ Especificaciones: ${specs}</div>` : ''}
@@ -705,38 +740,42 @@ export class FixedAssetsComponent implements OnInit {
     </body>
     </html>
   `;
-  const ventana = window.open('', '_blank', `width=${window.screen.width},height=${window.screen.height},left=0,top=0`);
-  if (ventana) {
-    ventana.document.write(html);
-    ventana.document.close();
+    const ventana = window.open(
+      '',
+      '_blank',
+      `width=${window.screen.width},height=${window.screen.height},left=0,top=0`,
+    );
+    if (ventana) {
+      ventana.document.write(html);
+      ventana.document.close();
+    }
   }
-}
 
   // ── Modal confirmación eliminar ──────────
-showDeleteConfirm = false;
-assetToDelete: FixedAssetResponse | null = null;
+  showDeleteConfirm = false;
+  assetToDelete: FixedAssetResponse | null = null;
 
-openDeleteConfirm(asset: FixedAssetResponse): void {
-  this.assetToDelete = asset;
-  this.showDeleteConfirm = true;
-}
+  openDeleteConfirm(asset: FixedAssetResponse): void {
+    this.assetToDelete = asset;
+    this.showDeleteConfirm = true;
+  }
 
-cancelDelete(): void {
-  this.assetToDelete = null;
-  this.showDeleteConfirm = false;
-}
+  cancelDelete(): void {
+    this.assetToDelete = null;
+    this.showDeleteConfirm = false;
+  }
 
-confirmDelete(): void {
-  if (!this.assetToDelete) return;
+  confirmDelete(): void {
+    if (!this.assetToDelete) return;
 
-  this.fixedAssetsService.delete(this.assetToDelete.id).subscribe({
-    next: () => {
-      this.assets = this.assets.filter(a => a.id !== this.assetToDelete!.id);
-      this.filterAssets();
-      this.closePreview();
-      this.cancelDelete();
-    },
-    error: (err) => console.error('Error eliminando activo:', err)
-  });
-}
+    this.fixedAssetsService.delete(this.assetToDelete.id).subscribe({
+      next: () => {
+        this.assets = this.assets.filter((a) => a.id !== this.assetToDelete!.id);
+        this.filterAssets();
+        this.closePreview();
+        this.cancelDelete();
+      },
+      error: (err) => console.error('Error eliminando activo:', err),
+    });
+  }
 }

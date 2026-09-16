@@ -4,17 +4,20 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, FormsModule } from '@angul
 import { RouterLink } from '@angular/router';
 import { AreaService } from '../../../../core/services/area.service';
 import { AreaResponse } from '../../../../core/models/area.model';
-import { RequirementResponse, RequirementsService, RequirementType } from '../../../../core/services/requriments.service';
+import {
+  RequirementResponse,
+  RequirementsService,
+  RequirementType,
+} from '../../../../core/services/requirements.service';
 
 @Component({
   selector: 'app-requirements-list',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, FormsModule, RouterLink],
   templateUrl: './requirements-list.html',
-  styleUrl: './requirements-list.scss'
+  styleUrl: './requirements-list.scss',
 })
 export class RequirementListComponent implements OnInit {
-
   requirements: RequirementResponse[] = [];
   filtered: RequirementResponse[] = [];
   areas: AreaResponse[] = [];
@@ -35,12 +38,12 @@ export class RequirementListComponent implements OnInit {
   constructor(
     private requirementsService: RequirementsService,
     private areaService: AreaService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
   ) {
     this.filtersForm = this.fb.group({
-      area:     [''],
-      status:   [''],
-      priority: ['']
+      area: [''],
+      status: [''],
+      priority: [''],
     });
   }
 
@@ -53,15 +56,15 @@ export class RequirementListComponent implements OnInit {
 
   loadAreas(): void {
     this.areaService.findAll().subscribe({
-      next: (data) => this.areas = data,
-      error: (err) => console.error('Error cargando áreas', err)
+      next: (data) => (this.areas = data),
+      error: (err) => console.error('Error cargando áreas', err),
     });
   }
 
   loadTypes(): void {
     this.requirementsService.getTypes().subscribe({
-      next: (data) => this.types = data,
-      error: (err) => console.error('Error cargando tipos', err)
+      next: (data) => (this.types = data),
+      error: (err) => console.error('Error cargando tipos', err),
     });
   }
 
@@ -76,15 +79,15 @@ export class RequirementListComponent implements OnInit {
       error: (err) => {
         console.error('Error cargando requerimientos', err);
         this.loading = false;
-      }
+      },
     });
   }
 
   applyFilters(): void {
     const { area, status, priority } = this.filtersForm.value;
-    this.filtered = this.requirements.filter(r => {
-      const okArea     = !area     || r.areaId === Number(area);
-      const okStatus   = !status   || r.status === status;
+    this.filtered = this.requirements.filter((r) => {
+      const okArea = !area || r.areaId === Number(area);
+      const okStatus = !status || r.status === status;
       const okPriority = !priority || r.priority === priority;
       return okArea && okStatus && okPriority;
     });
@@ -99,12 +102,12 @@ export class RequirementListComponent implements OnInit {
   openEdit(req: RequirementResponse): void {
     this.editingReq = req;
     this.editForm = {
-      title:      req.title,
+      title: req.title,
       description: req.description,
-      areaId:     req.areaId,
-      typeId:     req.typeId,
-      priority:   req.priority,
-      status:     req.status,
+      areaId: req.areaId,
+      typeId: req.typeId,
+      priority: req.priority,
+      status: req.status,
       assignedTo: req.assignedToId ?? '',
     };
     this.drawerOpen = true;
@@ -129,7 +132,7 @@ export class RequirementListComponent implements OnInit {
 
     this.requirementsService.update(this.editingReq.id, payload).subscribe({
       next: (updated) => {
-        const idx = this.requirements.findIndex(r => r.id === updated.id);
+        const idx = this.requirements.findIndex((r) => r.id === updated.id);
         if (idx !== -1) this.requirements[idx] = updated;
         this.applyFilters();
         this.saving = false;
@@ -138,7 +141,7 @@ export class RequirementListComponent implements OnInit {
       error: (err) => {
         console.error('Error actualizando requerimiento', err);
         this.saving = false;
-      }
+      },
     });
   }
 
@@ -156,31 +159,31 @@ export class RequirementListComponent implements OnInit {
 
     this.requirementsService.delete(this.reqToDelete.id).subscribe({
       next: () => {
-        this.requirements = this.requirements.filter(r => r.id !== this.reqToDelete!.id);
+        this.requirements = this.requirements.filter((r) => r.id !== this.reqToDelete!.id);
         this.applyFilters();
         this.reqToDelete = null;
       },
-      error: (err) => console.error('Error eliminando requerimiento', err)
+      error: (err) => console.error('Error eliminando requerimiento', err),
     });
   }
 
   // ── Helpers ──────────────────────────────
   translateStatus(status: string): string {
     const map: Record<string, string> = {
-      PENDING:     'Pendiente',
+      PENDING: 'Pendiente',
       IN_PROGRESS: 'En progreso',
-      COMPLETED:   'Completado',
-      REJECTED:    'Rechazado'
+      COMPLETED: 'Completado',
+      REJECTED: 'Rechazado',
     };
     return map[status] ?? status;
   }
 
   translatePriority(priority: string): string {
     const map: Record<string, string> = {
-      BAJA:    'Baja',
-      MEDIA:   'Media',
-      ALTA:    'Alta',
-      CRITICA: 'Crítica'
+      BAJA: 'Baja',
+      MEDIA: 'Media',
+      ALTA: 'Alta',
+      CRITICA: 'Crítica',
     };
     return map[priority] ?? priority;
   }

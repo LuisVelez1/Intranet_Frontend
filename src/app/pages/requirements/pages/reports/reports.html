@@ -1,0 +1,150 @@
+<section class="reports-container">
+  <div class="reports-header">
+    <div>
+      <h2>📊 Reportes de Requerimientos</h2>
+      <p class="subtitle">Análisis y seguimiento de solicitudes</p>
+    </div>
+    <div class="export-btns">
+      <button class="btn-export csv" (click)="downloadCSV()">⬇️ CSV</button>
+      <button class="btn-export pdf" (click)="downloadPDF()">🖨️ PDF</button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-card">
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Estado</label>
+        <select [(ngModel)]="filterStatus" (ngModelChange)="applyFilters()" class="filter-select">
+          <option value="">Todos</option>
+          <option value="PENDING">Pendiente</option>
+          <option value="IN_PROGRESS">En proceso</option>
+          <option value="COMPLETED">Completado</option>
+          <option value="REJECTED">Rechazado</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Área</label>
+        <select [(ngModel)]="filterArea" (ngModelChange)="applyFilters()" class="filter-select">
+          <option value="">Todas</option>
+          @for (a of areas; track a.id) {
+            <option [value]="a.id">{{ a.name }}</option>
+          }
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Prioridad</label>
+        <select [(ngModel)]="filterPriority" (ngModelChange)="applyFilters()" class="filter-select">
+          <option value="">Todas</option>
+          <option value="BAJA">Baja</option>
+          <option value="MEDIA">Media</option>
+          <option value="ALTA">Alta</option>
+          <option value="CRITICA">Crítica</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label>Desde</label>
+        <input
+          type="date"
+          [(ngModel)]="filterFrom"
+          (ngModelChange)="applyFilters()"
+          class="filter-select"
+        />
+      </div>
+      <div class="filter-group">
+        <label>Hasta</label>
+        <input
+          type="date"
+          [(ngModel)]="filterTo"
+          (ngModelChange)="applyFilters()"
+          class="filter-select"
+        />
+      </div>
+      <button class="btn-clear" (click)="clearFilters()">✕ Limpiar</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpis-row">
+    <div class="kpi-card total">
+      <span class="kpi-n">{{ total }}</span>
+      <span class="kpi-l">Total</span>
+    </div>
+    <div class="kpi-card pendiente">
+      <span class="kpi-n">{{ pendientes }}</span>
+      <span class="kpi-l">Pendientes</span>
+    </div>
+    <div class="kpi-card en_proceso">
+      <span class="kpi-n">{{ enProceso }}</span>
+      <span class="kpi-l">En proceso</span>
+    </div>
+    <div class="kpi-card completado">
+      <span class="kpi-n">{{ completados }}</span>
+      <span class="kpi-l">Completados</span>
+    </div>
+    <div class="kpi-card cancelado">
+      <span class="kpi-n">{{ cancelados }}</span>
+      <span class="kpi-l">Cancelados</span>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <h4>Por Estado</h4>
+      <canvas #chartByStatus class="chart-canvas"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>Por Área</h4>
+      <canvas #chartByArea class="chart-canvas"></canvas>
+    </div>
+    <div class="chart-card">
+      <h4>Por Prioridad</h4>
+      <canvas #chartByPriority class="chart-canvas"></canvas>
+    </div>
+  </div>
+
+  <!-- Detail table -->
+  <div class="table-card">
+    <div class="table-header">
+      <h4>Detalle ({{ filtered.length }} registros)</h4>
+    </div>
+    @if (filtered.length === 0) {
+      <div class="empty-state">📭 Sin resultados con los filtros actuales</div>
+    } @else {
+      <div class="table-wrapper">
+        <table class="req-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Área</th>
+              <th>Tipo</th>
+              <th>Descripción</th>
+              <th>Prioridad</th>
+              <th>Estado</th>
+              <th>Solicitante</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of filtered; track r.id) {
+              <tr>
+                <td>{{ r.areaName }}</td>
+                <td>{{ r.typeName }}</td>
+                <td class="desc-cell">{{ r.title }}</td>
+                <td>
+                  <span class="prio {{ r.priority }}">{{ translatePriority(r.priority) }}</span>
+                </td>
+                <td>
+                  <span class="status {{ r.status }}">{{ translateStatus(r.status) }}</span>
+                </td>
+                <td>{{ r.createdByName }}</td>
+                <td>{{ r.createdAt | date: 'dd/MM/yyyy' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+</section>

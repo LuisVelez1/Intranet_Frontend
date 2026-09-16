@@ -1,0 +1,149 @@
+<div class="area-req-page">
+  <div class="page-header">
+    <div>
+      <h2>📂 Requerimientos del Área</h2>
+      <span class="count-badge">{{ requirements.length }} solicitudes</span>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <span>⏳</span>
+      <p>Cargando requerimientos...</p>
+    </div>
+  } @else if (!currentUser?.areaId) {
+    <div class="empty-state">
+      <span>⚠️</span>
+      <p>No tienes un área asignada.</p>
+    </div>
+  } @else if (requirements.length === 0) {
+    <div class="empty-state">
+      <span>📭</span>
+      <p>No hay requerimientos en tu área.</p>
+    </div>
+  } @else {
+    <div class="requirements-list">
+      @for (req of requirements; track req.id) {
+        <div class="requirement-card">
+          <div class="card-header">
+            <div class="title-block">
+              <h3>{{ req.title }}</h3>
+              <div class="badges">
+                <span class="badge-type">{{ req.typeName }}</span>
+              </div>
+            </div>
+            <div class="right-block">
+              <span class="priority {{ req.priority }}">{{ getPriorityLabel(req.priority) }}</span>
+              <span class="status {{ req.status }}">{{ getStatusLabel(req.status) }}</span>
+            </div>
+          </div>
+
+          <p class="description">{{ req.description }}</p>
+
+          @if (req.assignedToName) {
+            <div class="assigned">
+              <span>👤 Asignado a:</span>
+              <strong>{{ req.assignedToName }}</strong>
+            </div>
+          }
+
+          <div class="comments-section">
+            <h4>💬 Respuestas</h4>
+
+            @if (loadingComments[req.id]) {
+              <p class="comments-loading">Cargando respuestas...</p>
+            } @else if (commentsMap[req.id]?.length) {
+              <div class="comments-list">
+                @for (c of commentsMap[req.id]; track c.id) {
+                  <div class="comment-item">
+                    <div class="comment-header">
+                      <strong>{{ c.author }}</strong>
+                      <span class="comment-date">{{ c.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+                    </div>
+                    <p class="comment-text">{{ c.comment }}</p>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="no-comments">Aún no hay respuestas.</p>
+            }
+
+            <div class="comment-form">
+              <textarea
+                [(ngModel)]="newCommentText[req.id]"
+                placeholder="Escribe una respuesta..."
+                rows="2"
+              ></textarea>
+              <button class="btn-comment" (click)="sendComment(req.id)">Responder</button>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="meta-left">
+              <span class="req-id">#{{ req.id }}</span>
+              <span class="created-by">Por: {{ req.createdByName }}</span>
+              @if (req.dueDate) {
+                <span class="due-date">📅 {{ req.dueDate | date: 'dd/MM/yyyy' }}</span>
+              }
+            </div>
+            <div class="footer-actions">
+              <button class="btn-edit" (click)="openEdit(req)">✏️ Editar</button>
+              <button class="btn-delete" (click)="deleteReq(req)">🗑️ Eliminar</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Edit dialog -->
+  @if (editingReq) {
+    <div class="modal-overlay" (click)="closeEdit()">
+      <div class="modal" (click)="$event.stopPropagation()">
+        <h3>✏️ Editar Requerimiento #{{ editingReq.id }}</h3>
+
+        <div class="form-group">
+          <label>Título</label>
+          <input type="text" [(ngModel)]="editForm.title" />
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea [(ngModel)]="editForm.description" rows="3"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Estado</label>
+            <select [(ngModel)]="editForm.status">
+              <option value="PENDING">Pendiente</option>
+              <option value="IN_PROGRESS">En proceso</option>
+              <option value="COMPLETED">Completado</option>
+              <option value="REJECTED">Rechazado</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Prioridad</label>
+            <select [(ngModel)]="editForm.priority">
+              <option value="BAJA">Baja</option>
+              <option value="MEDIA">Media</option>
+              <option value="ALTA">Alta</option>
+              <option value="CRITICA">Crítica</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Fecha límite</label>
+          <input type="date" [(ngModel)]="editForm.dueDate" />
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" (click)="closeEdit()">Cancelar</button>
+          <button class="btn-save" (click)="saveEdit()">Guardar cambios</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

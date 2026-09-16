@@ -6,32 +6,31 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
-import { SEDES } from '../../../core/constants/sedes.contants';
+import { SITES } from '../../../core/constants/sites.constants';
 
 @Component({
   selector: 'app-create-users',
   standalone: true,
   imports: [
-    CommonModule, 
-    ReactiveFormsModule, 
-    MatFormFieldModule, 
-    MatSelectModule, 
-    MatDatepickerModule, 
-    MatInputModule
+    CommonModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatDatepickerModule,
+    MatInputModule,
   ],
   templateUrl: './create-user.html',
-  styleUrls: ['./create-user.scss']
+  styleUrls: ['./create-user.scss'],
 })
 export class CreateUsersComponent implements OnInit {
-
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
 
   loading = false;
   error: string | null = null;
   success: string | null = null;
-  sedes = SEDES;
-  
+  sedes = SITES;
+
   areas: any[] = [];
 
   form = this.fb.nonNullable.group({
@@ -54,8 +53,8 @@ export class CreateUsersComponent implements OnInit {
 
   loadAreas() {
     this.userService.getAreas().subscribe({
-      next: (data) => this.areas = data,
-      error: (err) => console.error('Error al cargar áreas', err)
+      next: (data) => (this.areas = data),
+      error: (err) => console.error('Error al cargar áreas', err),
     });
   }
 
@@ -72,11 +71,13 @@ export class CreateUsersComponent implements OnInit {
     this.success = null;
 
     const rawValues = this.form.getRawValue();
-    
+
     const payload = {
       ...rawValues,
       areaId: Number(rawValues.areaId),
-      birthDate: rawValues.birthDate ? new Date(rawValues.birthDate).toISOString().split('T')[0] : null
+      birthDate: rawValues.birthDate
+        ? new Date(rawValues.birthDate).toISOString().split('T')[0]
+        : null,
     };
 
     this.userService.createAdminUser(payload).subscribe({
@@ -85,14 +86,14 @@ export class CreateUsersComponent implements OnInit {
         this.success = 'Usuario creado correctamente';
         this.form.reset({
           role: 'ADMIN',
-          sede: 'Armenia'
+          sede: 'Armenia',
         });
       },
       error: (err) => {
         console.error(err);
         this.loading = false;
         this.error = err?.error?.message || 'Error al crear el usuario';
-      }
+      },
     });
   }
 }

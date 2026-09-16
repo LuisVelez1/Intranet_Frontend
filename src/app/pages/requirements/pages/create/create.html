@@ -1,0 +1,83 @@
+<section class="create-requirement">
+  <h2>Crear requerimiento</h2>
+
+  <div class="form-section">
+    <span class="section-label">Solicitante</span>
+    <div class="user-card">
+      <div class="user-avatar">{{ currentUserName[0] }}</div>
+      <div>
+        <strong>{{ currentUserName }}</strong>
+        <span>{{ currentUserEmail }}</span>
+      </div>
+    </div>
+  </div>
+
+  @if (successMessage) {
+    <div class="alert success">{{ successMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="alert error">{{ errorMessage }}</div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="form-section">
+      <span class="section-label">Clasificación</span>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Área *</label>
+          <select formControlName="areaId" (change)="onAreaChange($any($event.target).value)">
+            <option value="">Seleccione un área</option>
+            @for (area of areas; track area.id) {
+              <option [value]="area.id">{{ area.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Tipo *</label>
+          <select formControlName="typeId">
+            <option value="">Seleccione un tipo</option>
+            @for (type of filteredTypes; track type.id) {
+              <option [value]="type.id">{{ type.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Prioridad *</label>
+          <select formControlName="priority">
+            <option value="">Seleccione prioridad</option>
+            <option value="BAJA">🟢 Baja</option>
+            <option value="MEDIA">🟡 Media</option>
+            <option value="ALTA">🟠 Alta</option>
+            <option value="CRITICA">🔴 Crítica</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detail -->
+    <div class="form-section">
+      <span class="section-label">Detalle</span>
+
+      <div class="form-group">
+        <label>Título *</label>
+        <input type="text" formControlName="title" placeholder="Ej: Equipo sin acceso a red" />
+      </div>
+
+      <div class="form-group">
+        <label>Descripción *</label>
+        <textarea
+          rows="4"
+          formControlName="description"
+          placeholder="Describe el requerimiento con el mayor detalle posible..."
+        >
+        </textarea>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="submitting || form.invalid">
+      {{ submitting ? 'Enviando...' : 'Crear requerimiento' }}
+    </button>
+  </form>
+</section>

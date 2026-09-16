@@ -1,0 +1,57 @@
+<section class="agents-container">
+  <div class="agents-header">
+    <div>
+      <h2>👥 Agentes por Área</h2>
+      <p class="subtitle">Líderes, coordinadores y directores responsables de cada área</p>
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="loading-state">
+      <span>⏳</span>
+      <p>Cargando agentes...</p>
+    </div>
+  } @else if (agents.length === 0) {
+    <div class="empty-state">
+      <span>👤</span>
+      <p>No hay agentes registrados.</p>
+      <small>Los agentes son usuarios con posición "Líder", "Coordinador" o "Director".</small>
+    </div>
+  } @else {
+    <div class="agents-grid">
+      @for (agent of agents; track agent.id) {
+        <div class="agent-card">
+          <div class="agent-header">
+            <div class="avatar">{{ getInitials(agent) }}</div>
+            <div class="agent-main">
+              <h3>{{ agent.firstName }} {{ agent.lastName }}</h3>
+              <span class="position">{{ agent.position }}</span>
+            </div>
+            <span class="status-badge" [class.active]="agent.status === 'ACTIVE'">
+              {{ agent.status === 'ACTIVE' ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+
+          <div class="agent-details">
+            <div class="detail-item">
+              <span class="detail-label">Área</span>
+              <span class="detail-value">{{ agent.areaName ?? 'Sin área' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Sede</span>
+              <span class="detail-value">{{ agent.sede || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Teléfono</span>
+              <span class="detail-value">{{ agent.phone || '—' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Correo</span>
+              <span class="detail-value email">{{ agent.email }}</span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

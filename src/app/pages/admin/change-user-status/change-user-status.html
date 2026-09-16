@@ -1,0 +1,95 @@
+<div class="change-status-page">
+  <div class="change-status-container">
+    <header class="header">
+      <img src="assets/images/Logo.png" class="logo" />
+      <h2>Gestión de Estado</h2>
+      <p class="subtitle">Activar o desactivar usuarios</p>
+    </header>
+
+    <form (ngSubmit)="submit()" class="form">
+      @if (success) {
+        <div class="message-box success-message">
+          {{ success }}
+        </div>
+      }
+
+      @if (error) {
+        <div class="message-box error-message">
+          {{ error }}
+        </div>
+      }
+
+      <div class="form-group search-section">
+        <label>Buscar usuario</label>
+
+        <div class="input-wrapper">
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            name="searchText"
+            placeholder="Nombre o apellido..."
+            (input)="filterUsers()"
+            [disabled]="!!selectedUser"
+          />
+
+          @if (selectedUser) {
+            <button type="button" class="clear-selection" (click)="clearSelection()">×</button>
+          }
+        </div>
+
+        @if (filteredUsers.length > 0 && searchText && !selectedUser) {
+          <ul class="dropdown-menu">
+            @for (user of filteredUsers; track user.id) {
+              <li (mousedown)="selectUser(user)">
+                <div class="user-avatar">{{ user.firstName[0] }}{{ user.lastName[0] }}</div>
+
+                <div class="user-info">
+                  <span class="name"> {{ user.firstName }} {{ user.lastName }} </span>
+
+                  <span class="status-badge" [class.is-active]="user.status === 'ACTIVE'">
+                    {{ user.status }}
+                  </span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <!-- SELECTED USER -->
+      @if (selectedUser) {
+        <div class="selected-user-card">
+          <p>Usuario seleccionado:</p>
+          <strong> {{ selectedUser.firstName }} {{ selectedUser.lastName }} </strong>
+
+          <span class="status-badge" [class.is-active]="selectedUser.status === 'ACTIVE'">
+            {{ selectedUser.status }}
+          </span>
+        </div>
+
+        <!-- OPTIONS -->
+        <div class="status-options">
+          <label class="option-card" [class.selected]="newStatus === 'ACTIVE'">
+            <input type="radio" [(ngModel)]="newStatus" name="status" value="ACTIVE" />
+            <span class="dot active"></span>
+            Activar
+          </label>
+
+          <label class="option-card" [class.selected]="newStatus === 'INACTIVE'">
+            <input type="radio" [(ngModel)]="newStatus" name="status" value="INACTIVE" />
+            <span class="dot inactive"></span>
+            Desactivar
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          class="btn-submit"
+          [disabled]="!newStatus || newStatus === selectedUser.status"
+        >
+          Actualizar estado
+        </button>
+      }
+    </form>
+  </div>
+</div>

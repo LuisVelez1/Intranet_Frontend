@@ -1,4 +1,4 @@
-import { environment } from '../../../enviroments/enviroment.prod';
+import { environment } from '../../../environments/environment.production';
 
 export const API_BASE_URL = environment.apiUrl;
 
@@ -14,5 +14,5 @@ export const API_ENDPOINTS = {
   certificates: `${API_BASE_URL}/api/academy/certificates`,
   academy: `${API_BASE_URL}/api/academy`,
   requirements: `${API_BASE_URL}/api/requirements`,
-  reservations: `${API_BASE_URL}/api/reservations`
+  reservations: `${API_BASE_URL}/api/reservations`,
 };
