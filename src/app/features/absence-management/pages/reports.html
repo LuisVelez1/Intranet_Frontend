@@ -1,0 +1,115 @@
+<section class="absence-page">
+  <header>
+    <p class="eyebrow">Gestión de ausencias</p>
+    <h1>Mis indicadores de ausencias</h1>
+    <p>Este resumen incluye únicamente sus solicitudes personales.</p>
+  </header>
+  <app-absence-filters (filtersChange)="filters.next($event)" />
+  <p>
+    El tiempo total y el promedio incluyen todas las solicitudes del filtro, independientemente de
+    su estado. Son horas solicitadas, no ausencias ejecutadas. Las solicitudes de días completos se
+    muestran por separado, sin convertirlas a horas laborales.
+  </p>
+  @if (view$ | async; as view) {
+    <button
+      type="button"
+      class="secondary"
+      [disabled]="view.loading"
+      (click)="service.reloadMyRequests()"
+    >
+      Actualizar indicadores
+    </button>
+    @if (view.loading) {
+      <p role="status">Cargando indicadores…</p>
+    } @else if (view.error) {
+      <p class="notice error" role="alert">{{ view.error }}</p>
+    } @else {
+      @let summary = view.summary;
+      <div class="kpis">
+        <article class="panel kpi">
+          <span>Total de solicitudes</span><strong data-testid="total">{{ summary.total }}</strong>
+        </article>
+        @for (item of summary.statuses; track item.status) {
+          <article class="panel kpi">
+            <span>{{ item.label }}</span
+            ><strong>{{ item.count }}</strong>
+          </article>
+        }
+        <article class="panel kpi">
+          <span>Horas solicitadas</span><strong>{{ duration(summary.totalMinutes) }}</strong>
+        </article>
+        <article class="panel kpi">
+          <span>Promedio de solicitudes con horario</span
+          ><strong>{{ duration(summary.averageMinutes) }}</strong>
+        </article>
+      </div>
+      <article class="panel kpi">
+        <span>Días completos solicitados</span><strong>{{ summary.fullDays }}</strong>
+      </article>
+      <div class="breakdowns">
+        <section class="panel">
+          <h2>Por estado</h2>
+          @for (item of summary.statuses; track item.status) {
+            <div class="bar-row">
+              <div>
+                <span>{{ item.label }}</span
+                ><strong>{{ item.count }}</strong>
+              </div>
+              <div class="bar">
+                <span
+                  [style.width.%]="summary.total ? (item.count / summary.total) * 100 : 0"
+                ></span>
+              </div>
+            </div>
+          }
+        </section>
+        <section class="panel">
+          <h2>Por tipo</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Tipo</th>
+                <th scope="col">Solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of summary.types; track item.label) {
+                <tr>
+                  <td>{{ item.label }}</td>
+                  <td>{{ item.count }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="2">Sin resultados.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+        <section class="panel">
+          <h2>Por motivo</h2>
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Motivo</th>
+                <th scope="col">Solicitudes</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of summary.reasons; track item.label) {
+                <tr>
+                  <td class="reason">{{ item.label }}</td>
+                  <td>{{ item.count }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="2">Sin resultados.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      </div>
+    }
+  }
+</section>

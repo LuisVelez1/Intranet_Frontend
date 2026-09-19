@@ -49,6 +49,10 @@
   
   <a routerLink="/profile" routerLinkActive="active" (click)="closeMenu()">Perfil</a>
   <a routerLink="/meeting-room" routerLinkActive="active" (click)="closeMenu()">Sala de Juntas</a>
+  <a routerLink="/absence-management/new" routerLinkActive="active" (click)="closeMenu()">Ausencias · Nueva solicitud</a>
+  <a routerLink="/absence-management/my-requests" routerLinkActive="active" (click)="closeMenu()">Ausencias · Mis solicitudes</a>
+  <a routerLink="/absence-management/approvals" routerLinkActive="active" (click)="closeMenu()">Ausencias · Aprobaciones</a>
+  <a routerLink="/absence-management/reports" routerLinkActive="active" (click)="closeMenu()">Ausencias · Indicadores</a>
   <a routerLink="/academy" routerLinkActive="active" (click)="closeMenu()">Academia</a>
   @if (['SUPER_ADMIN'].includes(role!)) {
     <a

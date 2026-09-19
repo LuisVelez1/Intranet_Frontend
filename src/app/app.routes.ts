@@ -17,6 +17,11 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       {
+        path: 'absence-management',
+        loadChildren: () =>
+          import('./features/absence-management/absence.routes').then((m) => m.ABSENCE_ROUTES),
+      },
+      {
         path: 'home',
         loadComponent: () => import('./pages/home/home').then((m) => m.HomeComponent),
       },
