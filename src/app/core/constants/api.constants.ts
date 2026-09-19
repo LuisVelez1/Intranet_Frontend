@@ -15,4 +15,5 @@ export const API_ENDPOINTS = {
   academy: `${API_BASE_URL}/api/academy`,
   requirements: `${API_BASE_URL}/api/requirements`,
   reservations: `${API_BASE_URL}/api/reservations`,
+  absences: `${API_BASE_URL}/api/absences`
 };
